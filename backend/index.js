@@ -1,8 +1,11 @@
 const express = require("express")
 const app = express()
 const cors = require('cors')
-require("dotenv").config()
 const PORT = process.env.PORT || 3001
+const connectDb = require("./config/db")
+require("dotenv").config()
+
+connectDb()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
