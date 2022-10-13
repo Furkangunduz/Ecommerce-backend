@@ -1,10 +1,22 @@
 const { Category } = require("../models/categoryModel")
 const { Product } = require("../models/productModel")
 
+const {
+    createProductValidation,
+    getSingleProductValidation,
+    updateSingleProductValidation,
+    deleteProductValidation,
+} = require("../validation/ProductValidation")
+
+
+
 const createProduct = async (req, res) => {
     const { name, category_name, images } = req.body
-    if (!name && !category_name) {
-        res.status(400).json({ msg: "Missing credential" })
+
+    const { error } = createProductValidation.validate({ name, category_name, images })
+    if (error) {
+        res.status(400).json(error.details[0].message)
+        return
     }
 
     const category = await Category.findOne({ name: category_name })
@@ -43,8 +55,10 @@ const getProducts = async (req, res) => {
 const getSingleProduct = async (req, res) => {
     const { productId } = req.params
 
-    if (!productId) {
-        res.status(400).json({ msg: "Should provide product id" })
+    const { error } = getSingleProductValidation.validate({ productId })
+    if (error) {
+        res.status(400).json(error.details[0].message)
+        return
     }
 
     const product = await Product.findById(productId)
@@ -58,8 +72,9 @@ const updateSingleProduct = async (req, res) => {
     const { productId } = req.params
     const { name, category_name } = req.body
 
-    if (!productId) {
-        res.status(400).json({ msg: "Should provide product id" })
+    const { error } = updateSingleProductValidation.validate({ productId, name, category_name, })
+    if (error) {
+        res.status(400).json(error.details[0].message)
         return
     }
     const product = await Product.findById(productId)
@@ -98,6 +113,11 @@ const updateSingleProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     const { productId } = req.params
 
+    const { error } = deleteProductValidation.validate({ productId })
+    if (error) {
+        res.status(400).json(error.details[0].message)
+        return
+    }
     const product = await Product.findById(productId)
 
     if (product) {

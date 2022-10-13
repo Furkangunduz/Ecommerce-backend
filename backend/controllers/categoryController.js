@@ -1,12 +1,22 @@
 const { Category } = require("../models/categoryModel")
 const { Product } = require("../models/productModel")
+const {
+    addCategoryValidation,
+    getCategoryValidation,
+    deleteCategoryValidation,
+    updateCategoryValidation,
+} = require("../validation/categoryValidation")
 
 const addCategory = async (req, res) => {
     const { name } = req.body
 
-    if (!name) {
-        res.status(400).json({ msg: "Missing credential" })
+    const { error } = addCategoryValidation.validate({ name })
+
+    if (error) {
+        res.status(400).json(error.details[0].message)
+        return
     }
+
 
     const categoryExist = await Category.findOne({ name })
     if (categoryExist) {
@@ -32,9 +42,13 @@ const getAllCategories = async (req, res) => {
 const getCategory = async (req, res) => {
     const { categoryId } = req.params
 
-    if (!categoryId) {
-        res.status(400).json({ msg: "Should provide categoryId" })
+    const { error } = getCategoryValidation.validate({ categoryId })
+
+    if (error) {
+        res.status(400).json(error.details[0].message)
+        return
     }
+
 
     const category = await Category.findById(categoryId)
 
@@ -49,23 +63,31 @@ const getCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
     const { categoryId } = req.params
     const { name } = req.body
+
+    const { error } = updateCategoryValidation.validate({ categoryId, name })
+    if (error) {
+        res.status(400).json(error.details[0].message)
+        return
+    }
+
     const category = await Category.findByIdAndUpdate(categoryId, { name })
 
     if (category) {
         for (let i = 0; i < category.product_list.length; i++) {
-            const product = await Product.findByIdAndUpdate(category.product_list[i], { category: name })
+            await Product.findByIdAndUpdate(category.product_list[i], { category: name })
         }
     }
-    res.status(200).json({ category: category, products: await Product.find({ category: name }) })
+    res.status(200).json({ category: category, products: await Product.findOne({ category: name }) })
 
 }
 const deleteCategory = async (req, res) => {
     const { categoryId } = req.params
 
-    if (!categoryId) {
-        res.status(400).json({ msg: "Should provide categoryId" })
+    const { error } = deleteCategoryValidation.validate({ categoryId })
+    if (error) {
+        res.status(400).json(error.details[0].message)
+        return
     }
-
     let category = await Category.findById(categoryId)
 
 
