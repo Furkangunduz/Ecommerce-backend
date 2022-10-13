@@ -1,4 +1,6 @@
-# Ecommerce-backend
+# 🔗[Ecommerce-backend](https://ecommercecase.herokuapp.com/)
+
+#live demo link : https://ecommercecase.herokuapp.com/
 
 # Beklenen Senaryolar
 
