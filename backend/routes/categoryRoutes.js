@@ -12,7 +12,7 @@ const {
 router.post("/", auth, addCategory)
 router.get("/", auth, getAllCategories)
 router.get("/:categoryId", auth, getCategory)
-router.put("/:categoryId", auth, updateCategory)
+router.patch("/:categoryId", auth, updateCategory)
 router.delete("/:categoryId", auth, deleteCategory)
 
 module.exports = router

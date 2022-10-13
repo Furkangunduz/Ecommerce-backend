@@ -12,7 +12,7 @@ const {
 router.post("/", auth, createProduct)
 router.get("/", auth, getProducts)
 router.get("/:productId", auth, getSingleProduct)
-router.put("/:productId", auth, updateSingleProduct)
+router.patch("/:productId", auth, updateSingleProduct)
 router.delete("/:productId", auth, deleteProduct)
 
 module.exports = router
