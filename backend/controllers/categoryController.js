@@ -1,4 +1,5 @@
 const { Category } = require("../models/categoryModel")
+const { Product } = require("../models/productModel")
 
 const addCategory = async (req, res) => {
     const { name } = req.body
@@ -45,7 +46,19 @@ const getCategory = async (req, res) => {
     }
 
 }
-const updateCategory = (req, res) => {
+const updateCategory = async (req, res) => {
+    const { categoryId } = req.params
+    const { name } = req.body
+    const category = await Category.findByIdAndUpdate(categoryId, { name })
+
+    if (category) {
+        console.log("category", category)
+        for (let i = 0; i < category.product_list.length; i++) {
+            const product = await Product.findByIdAndUpdate(category.product_list[i], { category: name })
+            if (product) console.log("product", product)
+        }
+    }
+    res.status(200).json({ category: category, products: await Product.find({ category: name }) })
 
 }
 const deleteCategory = async (req, res) => {
@@ -55,10 +68,17 @@ const deleteCategory = async (req, res) => {
         res.status(400).json({ msg: "Should provide categoryId" })
     }
 
-    const deletedCategory = await Category.findByIdAndRemove(categoryId)
+    const category = await Category.findById(categoryId)
 
-    if (deletedCategory) {
-        res.status(200).json({ msg: "Succesfuly deleted", deletedCategory: deletedCategory.name })
+
+    if (category) {
+        for (let i = 0; i < category?.product_list.length; i++) {
+            const productId = category?.product_list[i];
+            await Product.findByIdAndDelete(productId)
+        }
+        category.delete()
+
+        res.status(200).json({ msg: "Succesfuly deleted", category: category.name })
     } else {
         res.status(400).json({ msg: "Couldn't find the category." })
     }
