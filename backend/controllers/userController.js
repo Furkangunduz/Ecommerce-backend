@@ -11,6 +11,7 @@ const register = async (req, res) => {
 
     if (error) {
         res.status(400).json(error.details[0].message)
+        return
     }
 
     const userExist = await User.findOne({ email })
