@@ -13,7 +13,8 @@ const productSchema = mongoose.Schema({
         type: String,
         required: [true, "Please add a category"],
     },
+    images: [{ type: String }]
 }, { timestamps: true })
 
 
-module.exports = mongoose.model("Product", productSchema)
+module.exports = { Product: mongoose.model("Product", productSchema) }
